@@ -8,6 +8,10 @@ import httpx
 
 app = FastAPI()
 
+@router.api_route("/")
+async def items():
+    return {"test": "items"}
+
 # Initialize rate limiter
 limiter = Limiter(key_func=get_remote_address)
 
@@ -22,10 +26,6 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 # Define request model
 class TranslationRequest(BaseModel):
     message: str
-
-@app.get("/api/health")
-async def health_check():
-    return {"status": "healthy"}
 
 # Define translation endpoint with rate limiting
 @app.post("/translate")
