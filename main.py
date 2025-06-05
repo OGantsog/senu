@@ -23,6 +23,10 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 class TranslationRequest(BaseModel):
     message: str
 
+@app.get("/api/health")
+async def health_check():
+    return {"status": "healthy"}
+
 # Define translation endpoint with rate limiting
 @app.post("/translate")
 @limiter.limit("5/minute")
