@@ -8,12 +8,12 @@ import httpx
 
 app = FastAPI()
 
-@router.api_route("/")
-async def items():
-    return {"test": "items"}
-
 # Initialize rate limiter
 limiter = Limiter(key_func=get_remote_address)
+
+@app.get("/")
+async def root():
+    return {"message": "World World"}
 
 # Add rate limit exception handler
 @app.exception_handler(RateLimitExceeded)
@@ -38,7 +38,9 @@ async def translate(request: TranslationRequest):
                 "q": request.message,
                 "source": "auto",
                 "target": "en",
-                "format": "text"
+                "format": "text", 
+                "alternatives": 3,
+		        "api_key": ""
             }
         )
         translated_text = response.json()["translatedText"]
