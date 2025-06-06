@@ -16,12 +16,12 @@ async def root():
     return {"message": "World World"}
 
 # Add rate limit exception handler
-@app.exception_handler(RateLimitExceeded)
-async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
-    return JSONResponse(
-        status_code=429,
-        content={"detail": "Rate limit exceeded. Try again later."}
-    )
+#@app.exception_handler(RateLimitExceeded)
+#async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+#    return JSONResponse(
+#        status_code=429,
+#        content={"detail": "Rate limit exceeded. Try again later."}
+#    )
 
 # Define request model
 class TranslationRequest(BaseModel):
@@ -29,10 +29,10 @@ class TranslationRequest(BaseModel):
 
 # Define translation endpoint with rate limiting
 @app.post("/translate")
-@limiter.limit("5/minute")
+#z#@limiter.limit("5/minute")
 async def translate(request: TranslationRequest):
     async with httpx.AsyncClient() as client:
-        response = {"message": "Hello Ono World"}
+        response = {"translatedText": "Hello Ono World"}
         #await client.post(
         #    "https://libretranslate.de/translate",
         ##    json={
@@ -44,5 +44,5 @@ async def translate(request: TranslationRequest):
 		 #       "api_key": ""
          #   }
         #)
-        translated_text = response.json()["translatedText"]
-    return {"translatedText": translated_text}
+        #translated_text = response.json()["translatedText"]
+    return {"translatedText": "Helloo Onoo"}
