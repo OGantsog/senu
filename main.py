@@ -32,16 +32,17 @@ class TranslationRequest(BaseModel):
 @limiter.limit("5/minute")
 async def translate(request: TranslationRequest):
     async with httpx.AsyncClient() as client:
-        response = await client.post(
-            "https://libretranslate.de/translate",
-            json={
-                "q": request.message,
-                "source": "auto",
-                "target": "en",
-                "format": "text", 
-                "alternatives": 3,
-		        "api_key": ""
-            }
-        )
+        response = {"message": "Hello Ono World"}
+        #await client.post(
+        #    "https://libretranslate.de/translate",
+        ##    json={
+         #       "q": request.message,
+         #       "source": "auto",
+         #       "target": "en",
+         #       "format": "text", 
+         #       "alternatives": 3,
+		 #       "api_key": ""
+         #   }
+        #)
         translated_text = response.json()["translatedText"]
     return {"translatedText": translated_text}
