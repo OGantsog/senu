@@ -21,7 +21,7 @@ async def root():
     return {"message": "World World"}
 
 async def get_translation_result(text_message):
-    result = await asyncio.to_thread(translator.translate, text_message, dest='en')
+    result = await translator.translate(text_message, dest='en')
     return result.text
 
 # Add rate limit exception handler
