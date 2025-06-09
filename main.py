@@ -20,8 +20,8 @@ translator = Translator(service_urls=[
 async def root():
     return {"message": "World World"}
 
-async def get_translation_result(message):
-    result = await translator.translate(message)
+async def get_translation_result(text_message):
+    result = await translator.translate(text_message)
     return result.text
 
 # Add rate limit exception handler
@@ -41,6 +41,6 @@ class TranslationRequest(BaseModel):
 async def translate(request: TranslationRequest):
     async with httpx.AsyncClient() as client:
         #result = translator.translate(request.message)
-        translation = await get_translation_result(request.message)
-        translated_text = translation
+        text_result = await get_translation_result(request.message)
+        translated_text = text_result
     return {"translatedText": translated_text}
