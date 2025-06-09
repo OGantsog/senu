@@ -5,11 +5,16 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 import httpx
+from googletrans import Translator
+
 
 app = FastAPI()
 
 # Initialize rate limiter
 limiter = Limiter(key_func=get_remote_address)
+translator = Translator(service_urls=[
+      'translate.googleapis.com'
+    ])
 
 @app.get("/")
 async def root():
@@ -32,6 +37,7 @@ class TranslationRequest(BaseModel):
 #@limiter.limit("5/minute")
 async def translate(request: TranslationRequest):
     async with httpx.AsyncClient() as client:
+        result = translator.translate(request.message)
         #response = await client.post(
         #    "https://libretranslate.de/translate",
         #    json={
@@ -44,5 +50,5 @@ async def translate(request: TranslationRequest):
         #    }
         #)
         #translated_text = response.json()["translatedText"]
-        translated_text = "There is no API for now"
+        translated_text = result.text
     return {"translatedText": translated_text}
