@@ -1,53 +1,45 @@
+# prompt: Can you write API using this googletrans that translates any text message into english?
 
-from fastapi import FastAPI, Request
-from pydantic import BaseModel
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-import httpx
+from fastapi import FastAPI
 from googletrans import Translator
 import asyncio
 
-
+# Initialize the FastAPI application
 app = FastAPI()
 
-limiter = Limiter(key_func=get_remote_address)
+# Initialize the translator
+# Ensure googletrans is installed by running !pip install googletrans if needed
 translator = Translator(service_urls=[
       'translate.googleapis.com'
     ])
 
-@app.get("/")
-async def root():
-    return {"message": "World World"}
+# Define an asynchronous function to get translation
+async def get_translation_result(message: str):
+    """
+    Translates the given message to English.
 
-async def get_translation_result(text_message):
-    result = await translator.translate(text_message)
+    Args:
+        message (str): The text message to translate.
+
+    Returns:
+        str: The translated text in English.
+    """
+    # Translate the message to English
+    # We specify the destination language as 'en' (English)
+    result = await asyncio.to_thread(translator.translate, message, dest='en')
     return result.text
 
-# Add rate limit exception handler
-#@app.exception_handler(RateLimitExceeded)
-#async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
-#    return JSONResponse(
-#        status_code=429,
-#        content={"detail": "Rate limit exceeded. Try again later."}
-#    )
+# Define an API endpoint for translation
+@app.get("/translate")
+async def translate_text(text: str):
+    """
+    API endpoint to translate a given text message to English.
 
-class TranslationRequest(BaseModel):
-    message: str
+    Args:
+        text (str): The text message to translate.
 
-# Define translation endpoint with rate limiting
-@app.post("/translate")
-async def translate(request: TranslationRequest):
-    text_result = await get_translation_result(request.message)
-    return {"translatedText": text_result}
-
-#@limiter.limit("5/minute")
-#async def translate(request: TranslationRequest):
-#    async with httpx.AsyncClient() as client:
-#        text_result = translator.translate(request.message)
-#        return {"translatedText": text_result}
-    
-   #      result = translator.translate(request.message)
-        #text_result = await get_translation_result(request.message)
-  #      translated_text = text_result
-  #  return {"translatedText": translated_text}
+    Returns:
+        dict: A dictionary containing the original text and the translated text.
+    """
+    translated_text = await get_translation_result(text)
+    return {"original_text": text, "translated_text": translated_text}
