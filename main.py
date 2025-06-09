@@ -20,10 +20,6 @@ translator = Translator(service_urls=[
 async def root():
     return {"message": "World World"}
 
-async def get_translation_result(text_message):
-    result = await translator.translate(text_message)
-    return result.text
-
 # Add rate limit exception handler
 #@app.exception_handler(RateLimitExceeded)
 #async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
@@ -37,14 +33,13 @@ class TranslationRequest(BaseModel):
 
 # Define translation endpoint with rate limiting
 @app.post("/translate")
-async def translate(request: TranslationRequest):
-    text_result = await get_translation_result(request.message)
-    return {"translatedText": text_result}
-
 #@limiter.limit("5/minute")
-##async def translate(request: TranslationRequest):
- ##   async with httpx.AsyncClient() as client:
-  #      #result = translator.translate(request.message)
-  #      text_result = await get_translation_result(request.message)
+async def translate(request: TranslationRequest):
+    async with httpx.AsyncClient() as client:
+        text_result = await translator.translate(request.message)
+        return {"translatedText": text_result}
+    
+   #      result = translator.translate(request.message)
+        #text_result = await get_translation_result(request.message)
   #      translated_text = text_result
   #  return {"translatedText": translated_text}
